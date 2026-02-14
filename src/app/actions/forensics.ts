@@ -1,6 +1,28 @@
 "use server";
 
-import Groq from "groq-sdk";
+async function callGroqVisionAPI(messages: any[], apiKey: string) {
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${apiKey}`,
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            model: "meta-llama/llama-4-scout-17b-16e-instruct",
+            messages,
+            temperature: 0.1,
+            max_tokens: 512,
+        }),
+        signal: AbortSignal.timeout(30000),
+    });
+
+    if (!response.ok) {
+        const errorText = await response.text().catch(() => "Unknown");
+        throw new Error(`Groq API ${response.status}: ${errorText.slice(0, 200)}`);
+    }
+
+    return response.json();
+}
 
 export async function verifyMedia(formData: FormData) {
     const apiKey = process.env.GROQ_API_KEY;
@@ -38,8 +60,6 @@ export async function verifyMedia(formData: FormData) {
         };
     }
 
-    const groq = new Groq({ apiKey, timeout: 30000 });
-
     try {
         console.log(`[Forensics] Mode: ${mode} | File: ${fileName} | Size: ${payloadSizeKB.toFixed(0)} KB`);
 
@@ -68,35 +88,32 @@ Analyze for:
 4. Lighting changes that don't match the background environment.`;
         }
 
-        const completion = await groq.chat.completions.create({
-            messages: [
-                {
-                    role: "user",
-                    content: [
-                        {
-                            type: "text",
-                            text: `${systemPrompt}
+        const messages = [
+            {
+                role: "user",
+                content: [
+                    {
+                        type: "text",
+                        text: `${systemPrompt}
 
 You MUST respond with ONLY a JSON object in this exact format, nothing else:
 {"deepfake_probability": <number 0-100>, "reasoning": "<detailed technical forensic analysis sentence>", "security_flag": "<FLAG_CODE>"}
 
 Media Filename: ${fileName}`
-                        },
-                        {
-                            type: "image_url",
-                            image_url: {
-                                url: `data:${fileType};base64,${base64Data}`
-                            }
+                    },
+                    {
+                        type: "image_url",
+                        image_url: {
+                            url: `data:${fileType};base64,${base64Data}`
                         }
-                    ]
-                }
-            ],
-            model: "meta-llama/llama-4-scout-17b-16e-instruct",
-            temperature: 0.1,
-            max_tokens: 512
-        });
+                    }
+                ]
+            }
+        ];
 
-        const rawResponse = completion.choices[0].message.content || "";
+        console.log("[Forensics] Calling Groq Vision API via fetch...");
+        const data = await callGroqVisionAPI(messages, apiKey);
+        const rawResponse = data.choices[0].message.content || "";
         console.log("[Forensics] Raw AI Response:", rawResponse);
 
         const jsonMatch = rawResponse.match(/\{[\s\S]*?\}/);
@@ -123,16 +140,10 @@ Media Filename: ${fileName}`
     } catch (error: any) {
         console.error("[Forensics] API Error:", error?.message || error);
 
-        const isConnectionError = error?.message?.toLowerCase()?.includes("connect") ||
-            error?.message?.toLowerCase()?.includes("timeout") ||
-            error?.message?.toLowerCase()?.includes("econnrefused");
-
         return {
             score: 0,
             verdict: "AUDIT_FAILED",
-            details: isConnectionError
-                ? "Neural Forensic Kernel could not reach the AI endpoint. This may be a temporary network issue — please retry."
-                : `Vision API Error: ${error?.message || "Unknown error"}. Please try again with a smaller file.`,
+            details: `Forensic API Error: ${error?.message || "Unknown error"}. Please retry.`,
             flag: "VISION_API_ERROR"
         };
     }

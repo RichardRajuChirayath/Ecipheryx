@@ -1,6 +1,5 @@
 "use server";
 
-import Groq from "groq-sdk";
 import { prisma } from "@/lib/prisma";
 import { mintProofOfLifeToken } from "@/lib/solana";
 
@@ -14,6 +13,31 @@ interface VerificationPayload {
     sequence: ChallengeResult[];
 }
 
+async function callGroqAPI(messages: any[], apiKey: string) {
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${apiKey}`,
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            model: "llama-3.3-70b-versatile",
+            messages,
+            response_format: { type: "json_object" },
+            temperature: 0.1,
+            max_tokens: 512,
+        }),
+        signal: AbortSignal.timeout(30000),
+    });
+
+    if (!response.ok) {
+        const errorText = await response.text().catch(() => "Unknown");
+        throw new Error(`Groq API ${response.status}: ${errorText.slice(0, 200)}`);
+    }
+
+    return response.json();
+}
+
 export async function verifyLiveness(
     payload: VerificationPayload,
     challengeLabel: string,
@@ -22,7 +46,6 @@ export async function verifyLiveness(
     const apiKey = process.env.GROQ_API_KEY;
     if (!apiKey) return { verified: false, confidence: 0, reasoning: "Missing API credentials." };
 
-    const groq = new Groq({ apiKey, timeout: 30000 });
     const { sequence } = payload;
 
     if (!sequence || sequence.length < 2) {
@@ -43,11 +66,10 @@ export async function verifyLiveness(
             };
         });
 
-        const completion = await groq.chat.completions.create({
-            messages: [
-                {
-                    role: "system",
-                    content: `You are a high-security Biometric Auditor. 
+        const messages = [
+            {
+                role: "system",
+                content: `You are a high-security Biometric Auditor. 
                     
                     AUDIT GUIDELINES (SENSITIVITY ADJUSTED):
                     - Acknowledge that users may perform SUBTLE movements. 
@@ -71,17 +93,17 @@ export async function verifyLiveness(
                       "reasoning": "Technical explanation.",
                       "human_flag": "FLAG_CODE" 
                     }`
-                },
-                {
-                    role: "user",
-                    content: `Audit sequence: ${JSON.stringify(breakdown)}`
-                }
-            ],
-            model: "llama-3.3-70b-versatile",
-            response_format: { type: "json_object" }
-        });
+            },
+            {
+                role: "user",
+                content: `Audit sequence: ${JSON.stringify(breakdown)}`
+            }
+        ];
 
-        const result = JSON.parse(completion.choices[0].message.content || "{}");
+        console.log("[Verify] Calling Groq API via fetch...");
+        const data = await callGroqAPI(messages, apiKey);
+        const result = JSON.parse(data.choices[0].message.content || "{}");
+        console.log("[Verify] Groq response received:", result.verified);
 
         if (result.verified) {
             const user = await prisma.user.upsert({
@@ -138,7 +160,7 @@ export async function verifyLiveness(
             reasoning: result.reasoning ?? "Audit complete."
         };
     } catch (error: any) {
-        console.error("Auditor error:", error?.message || error);
+        console.error("[Verify] Error:", error?.message || error);
         return { verified: false, confidence: 0, reasoning: `Biometric Audit Failed: ${error?.message || "Telemetry inconsistent."}` };
     }
 }
