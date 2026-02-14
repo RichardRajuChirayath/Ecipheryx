@@ -22,7 +22,7 @@ export async function verifyLiveness(
     const apiKey = process.env.GROQ_API_KEY;
     if (!apiKey) return { verified: false, confidence: 0, reasoning: "Missing API credentials." };
 
-    const groq = new Groq({ apiKey });
+    const groq = new Groq({ apiKey, timeout: 30000 });
     const { sequence } = payload;
 
     if (!sequence || sequence.length < 2) {
@@ -137,8 +137,8 @@ export async function verifyLiveness(
             confidence: result.confidence ?? 0,
             reasoning: result.reasoning ?? "Audit complete."
         };
-    } catch (error) {
-        console.error("Auditor error:", error);
-        return { verified: false, confidence: 0, reasoning: "Biometric Audit Failed: Telemetry inconsistent." };
+    } catch (error: any) {
+        console.error("Auditor error:", error?.message || error);
+        return { verified: false, confidence: 0, reasoning: `Biometric Audit Failed: ${error?.message || "Telemetry inconsistent."}` };
     }
 }
