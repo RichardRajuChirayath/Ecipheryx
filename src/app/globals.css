@@ -129,7 +129,7 @@
     -webkit-text-stroke: 2.5px #8b5cf6;
     font-weight: 900;
     text-transform: uppercase;
-    letter-spacing: -0.12em;
+    letter-spacing: -0.04em;
     /* Extreme negative tracking for overlapping */
     line-height: 0.8;
     filter: drop-shadow(0 0 12px rgba(139, 92, 246, 0.5));

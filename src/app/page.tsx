@@ -20,7 +20,7 @@ export default function Home() {
             <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
           </div>
           <div className="flex flex-col">
-            <span className="text-2xl font-black text-white text-outlined-purple -mb-1" style={{ letterSpacing: '-0.1em' }}>ECIPHERYX<span className="logo-dot">.</span></span>
+            <span className="text-2xl font-black text-white text-outlined-purple mb-0.5">ECIPHERYX<span className="logo-dot">.</span></span>
             <span className="text-[9px] font-mono tracking-[0.2em] text-purple-500/80 uppercase font-black">Biometric_System_v4</span>
           </div>
         </div>

@@ -156,7 +156,7 @@ export default function DeepfakeForensics() {
                             <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
                         </Link>
                         <div className="flex flex-col">
-                            <span className="text-2xl font-black text-white text-outlined-purple leading-none mb-1" style={{ letterSpacing: '-0.1em' }}>ECIPHERYX<span className="logo-dot">.</span></span>
+                            <span className="text-2xl font-black text-white text-outlined-purple leading-none mb-1.5">ECIPHERYX<span className="logo-dot">.</span></span>
                             <span className="text-[10px] text-cyan-500/60 font-mono tracking-[0.4em] uppercase font-bold">Forensic_Analysis_Lab</span>
                         </div>
                     </div>
