@@ -27,42 +27,52 @@ export default function DeepfakeForensics() {
         }
     };
 
+    const extractVideoFrame = (videoFile: File): Promise<string> => {
+        return new Promise((resolve, reject) => {
+            const video = document.createElement("video");
+            video.preload = "metadata";
+            video.muted = true;
+            video.playsInline = true;
+
+            video.onloadeddata = () => {
+                // Seek to 1 second into the video for a representative frame
+                video.currentTime = Math.min(1, video.duration * 0.1);
+            };
+
+            video.onseeked = () => {
+                const canvas = document.createElement("canvas");
+                const MAX_WIDTH = 1024;
+                const scale = Math.min(MAX_WIDTH / video.videoWidth, 1);
+                canvas.width = video.videoWidth * scale;
+                canvas.height = video.videoHeight * scale;
+                const ctx = canvas.getContext("2d");
+                ctx?.drawImage(video, 0, 0, canvas.width, canvas.height);
+                const base64 = canvas.toDataURL("image/jpeg", 0.85).split(",")[1];
+                URL.revokeObjectURL(video.src);
+                resolve(base64);
+            };
+
+            video.onerror = () => {
+                URL.revokeObjectURL(video.src);
+                reject(new Error("Could not extract frame from video"));
+            };
+
+            video.src = URL.createObjectURL(videoFile);
+        });
+    };
+
     const startForensics = async () => {
         if (!file) return;
         setStatus("PROCESSING");
 
-        const reader = new FileReader();
-        reader.onload = async () => {
-            let optimizedBase64 = "";
-
-            if (mode === "IMAGE") {
-                const img = new Image();
-                img.onload = async () => {
-                    const canvas = document.createElement("canvas");
-                    const MAX_WIDTH = 1024;
-                    const scale = Math.min(MAX_WIDTH / img.width, 1);
-                    canvas.width = img.width * scale;
-                    canvas.height = img.height * scale;
-                    const ctx = canvas.getContext("2d");
-                    ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    optimizedBase64 = canvas.toDataURL("image/jpeg", 0.85).split(",")[1];
-                    await performAudit(optimizedBase64);
-                };
-                img.src = reader.result as string;
-            } else {
-                optimizedBase64 = (reader.result as string).split(",")[1];
-                await performAudit(optimizedBase64);
-            }
-        };
-
-        const performAudit = async (base64: string) => {
+        const performAudit = async (base64: string, overrideType?: string) => {
             setStatus("ANALYZING");
             try {
                 const { verifyMedia } = await import("@/app/actions/forensics");
                 const formData = new FormData();
                 formData.append("base64", base64);
                 formData.append("fileName", file.name);
-                formData.append("fileType", file.type);
+                formData.append("fileType", overrideType || file.type);
                 formData.append("mode", mode);
 
                 const forensicResult = await verifyMedia(formData);
@@ -86,7 +96,52 @@ export default function DeepfakeForensics() {
             }
         };
 
-        reader.readAsDataURL(file);
+        try {
+            if (mode === "VIDEO") {
+                // Extract a single keyframe from the video and analyze it as an image
+                const frameBase64 = await extractVideoFrame(file);
+                await performAudit(frameBase64, "image/jpeg");
+            } else if (mode === "AUDIO") {
+                // Send audio metadata as text for analysis (vision model can't process audio)
+                const audioMeta = JSON.stringify({
+                    fileName: file.name,
+                    fileSize: `${(file.size / 1024 / 1024).toFixed(2)} MB`,
+                    fileType: file.type,
+                    lastModified: new Date(file.lastModified).toISOString(),
+                });
+                // Encode metadata as base64 for the server action
+                const metaBase64 = btoa(audioMeta);
+                await performAudit(metaBase64, "text/plain");
+            } else {
+                // IMAGE mode — optimize and send
+                const reader = new FileReader();
+                reader.onload = async () => {
+                    const img = new Image();
+                    img.onload = async () => {
+                        const canvas = document.createElement("canvas");
+                        const MAX_WIDTH = 1024;
+                        const scale = Math.min(MAX_WIDTH / img.width, 1);
+                        canvas.width = img.width * scale;
+                        canvas.height = img.height * scale;
+                        const ctx = canvas.getContext("2d");
+                        ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        const optimizedBase64 = canvas.toDataURL("image/jpeg", 0.85).split(",")[1];
+                        await performAudit(optimizedBase64);
+                    };
+                    img.src = reader.result as string;
+                };
+                reader.readAsDataURL(file);
+            }
+        } catch (err) {
+            console.error(err);
+            setResult({
+                score: 0,
+                verdict: "AUDIT_FAILED",
+                details: `Could not process ${mode} file: ${(err as Error).message}`,
+                flag: "CLIENT_ERROR"
+            });
+            setStatus("COMPLETED");
+        }
     };
 
     return (
