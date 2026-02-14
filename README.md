@@ -69,3 +69,5 @@ Tokenized identity on the **Solana Blockchain**.
 ---
 
 *Built for the future of digital sovereignty.*
+
+*“Zero-Knowledge. Infinite Assurance.”*
