@@ -1,36 +1,72 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ECIPHERYX 🛡️
+### The Zero-Knowledge Anti-Deepfake Identity Protocol
 
-## Getting Started
+**Ecipheryx** is a state-of-the-art security platform designed to protect digital identity in an era of synthetic media and deepfake Coercion. By combining **Zero-Knowledge Biometrics**, **Multi-Modal Forensics**, and **Soulbound Token Attestations**, Ecipheryx creates a "Biological Firewall" for high-value digital assets.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🚀 Key Features
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 1. Project Prism (ZK-Biometrics) 🧬
+The crown jewel of Ecipheryx. It allows users to prove their identity without transmitting a single pixel of biometric data.
+- **Client-Side Landmark Extraction**: 468 facial points processed locally via MediaPipe.
+- **SHA-256 Commitment**: Biometric data is converted into an irreversible cryptographic hash.
+- **Zero-Knowledge Proofs**: Server verifies the mathematical "proof of knowledge" without ever seeing the user's face.
+- **Spectral Analysis**: Detects replay attacks by analyzing frequency-domain biometric signatures.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 2. Neural Forensic Lab 🔍
+A multi-modal audit suite to detect AI-generated manipulation.
+- **Image/Audio/Video Forensics**: Hunts for frame-splicing, biometric drift, and synthetic artifacts.
+- **MoE Reasoning**: Uses Mixture-of-Experts AI models to provide technical reasoning for every "SPOOF" or "TRUST" verdict.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 3. Liveness Rituals (MFA) 🕯️
+Sequential biometric challenges to ensure "Proof of Life" in real-time.
+- **Dynamic Challenges**: Wave, Smile, Nod sequences with real-time telemetry audit.
+- **RPPG Detection**: (Vascular Pulse) Microscopic color change analysis to detect a living heartbeat.
 
-## Learn More
+### 4. Soulbound Proof-of-Life 🔗
+Tokenized identity on the **Solana Blockchain**.
+- **SBT Minting**: Successful rituals mint a non-transferable "Proof of Life" token.
+- **Sanctuary Dashboard**: A high-fidelity HUD for managing decentralized identity assets.
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🛠️ Technical Stack
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **Framework**: Next.js 15 (App Router)
+- **Styling**: Tailwind CSS + Custom HUD Utilities
+- **Animations**: Framer Motion
+- **AI/ML**: MediaPipe (FaceMesh/Hands) + Groq SDK (Llama-3.3-70B)
+- **Blockchain**: Solana Web3.js + SPL Token Protocol
+- **Database**: Prisma + PostgreSQL
+- **Zero-Knowledge**: Custom ZK-Proof Protocol (ECC/SHA-256 Commitments)
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🔒 Security First
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Zero Biometric Retention**: Raw landmarks and images are destroyed instantly after local processing.
+- **Privacy by Design**: The server never sees the user's face — only cryptographic attestations.
+- **Encrypted Transmission**: All communication is secured via high-entropy encryption channels.
+
+---
+
+## 🚦 Getting Started
+
+1. **Environment Setup**:
+   Copy `.env.example` to `.env` and configure your `GROQ_API_KEY` and `SOLANA_PRIVATE_KEY`.
+
+2. **Run Development Server**:
+   ```bash
+   npm install
+   npx prisma generate
+   npm run dev
+   ```
+
+3. **Access Ecipheryx**:
+   Navigate to `http://localhost:3000` to initiate the protocol.
+
+---
+
+*Built for the future of digital sovereignty.*
+**Ecipheryx: Authenticity or Death.**
