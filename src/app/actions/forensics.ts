@@ -27,10 +27,21 @@ export async function verifyMedia(formData: FormData) {
         };
     }
 
-    const groq = new Groq({ apiKey });
+    // Check payload size — limit to ~4MB base64 (~3MB actual file)
+    const payloadSizeKB = base64Data.length / 1024;
+    if (payloadSizeKB > 4096) {
+        return {
+            score: 0,
+            verdict: "PAYLOAD_TOO_LARGE",
+            details: `File too large (${(payloadSizeKB / 1024).toFixed(1)} MB). Max 3MB. Compress or resize before uploading.`,
+            flag: "SIZE_EXCEEDED"
+        };
+    }
+
+    const groq = new Groq({ apiKey, timeout: 30000 });
 
     try {
-        console.log(`[Forensics] Mode: ${mode} | File: ${fileName} | Size: ${(base64Data.length / 1024).toFixed(0)} KB`);
+        console.log(`[Forensics] Mode: ${mode} | File: ${fileName} | Size: ${payloadSizeKB.toFixed(0)} KB`);
 
         let systemPrompt = "";
 
@@ -112,10 +123,16 @@ Media Filename: ${fileName}`
     } catch (error: any) {
         console.error("[Forensics] API Error:", error?.message || error);
 
+        const isConnectionError = error?.message?.toLowerCase()?.includes("connect") ||
+            error?.message?.toLowerCase()?.includes("timeout") ||
+            error?.message?.toLowerCase()?.includes("econnrefused");
+
         return {
             score: 0,
             verdict: "AUDIT_FAILED",
-            details: `Vision API Error: ${error?.message || "Unknown error"}. Please try again with a smaller file.`,
+            details: isConnectionError
+                ? "Neural Forensic Kernel could not reach the AI endpoint. This may be a temporary network issue — please retry."
+                : `Vision API Error: ${error?.message || "Unknown error"}. Please try again with a smaller file.`,
             flag: "VISION_API_ERROR"
         };
     }
