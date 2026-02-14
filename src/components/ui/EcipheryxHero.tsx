@@ -43,7 +43,22 @@ export default function EcipheryxHero() {
                     </span>
                 </motion.div>
 
-                <motion.div variants={itemVariants} className="relative mb-12">
+                <motion.div variants={itemVariants} className="relative mb-12 flex flex-col items-center">
+                    {/* Official Cyber-Chameleon Logo centerpiece */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 30, scale: 0.8 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        transition={{ duration: 1.2, ease: "easeOut" }}
+                        className="relative w-56 h-56 mb-12 group"
+                    >
+                        <div className="absolute inset-0 bg-cyan-500/10 blur-[80px] rounded-full group-hover:bg-purple-500/20 transition-all duration-1000" />
+                        <img
+                            src="/logo.png"
+                            alt="Ecipheryx Chameleon"
+                            className="w-full h-full object-contain relative z-10 drop-shadow-[0_0_30px_rgba(0,229,255,0.4)] group-hover:scale-105 transition-all duration-500"
+                        />
+                    </motion.div>
+
                     <motion.h1
                         initial={{ opacity: 0, scale: 0.95, filter: "blur(10px)" }}
                         animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
@@ -52,14 +67,14 @@ export default function EcipheryxHero() {
                             duration: 1.2,
                             ease: [0.23, 1, 0.32, 1]
                         }}
-                        className="text-8xl md:text-[13rem] font-black leading-none select-none text-outlined-purple"
+                        className="text-8xl md:text-[13rem] font-black leading-none select-none text-outlined-purple text-center"
                     >
                         ECIPHERYX<span className="logo-dot">.</span>
                     </motion.h1>
                     <motion.span
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 0.15 }}
-                        className="absolute -top-12 left-1/2 -translate-x-1/2 text-[15rem] font-black text-purple-500 blur-[120px] pointer-events-none"
+                        className="absolute top-48 left-1/2 -translate-x-1/2 text-[15rem] font-black text-purple-500 blur-[120px] pointer-events-none"
                     >
                         AI
                     </motion.span>

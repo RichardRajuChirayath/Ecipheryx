@@ -52,8 +52,8 @@ export default function EcipheryxDashboard() {
                 {/* Header Section */}
                 <header className="flex flex-col md:flex-row items-center justify-between mb-20 gap-10">
                     <div className="flex items-center gap-6">
-                        <Link href="/" className="w-12 h-12 bg-blue-600/20 border border-blue-500/30 rounded-xl flex items-center justify-center text-blue-400 backdrop-blur-2xl hover:bg-blue-600/30 transition-all shadow-lg">
-                            <ChevronLeft className="w-6 h-6" />
+                        <Link href="/" className="w-16 h-16 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center backdrop-blur-2xl hover:bg-cyan-500/10 transition-all shadow-lg p-3">
+                            <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
                         </Link>
                         <div className="flex flex-col">
                             <span className="text-2xl font-black text-white text-outlined-purple leading-none mb-1" style={{ letterSpacing: '-0.1em' }}>ECIPHERYX<span className="logo-dot">.</span></span>

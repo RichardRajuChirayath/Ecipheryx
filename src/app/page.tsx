@@ -16,8 +16,8 @@ export default function Home() {
       {/* Precision Header HUD */}
       <nav className="fixed top-0 left-0 w-full z-50 p-8 flex justify-between items-center px-12 pointer-events-none">
         <div className="flex items-center gap-6 pointer-events-auto group cursor-default">
-          <div className="w-12 h-12 bg-blue-600/20 border border-blue-500/30 rounded-xl flex items-center justify-center text-blue-400 backdrop-blur-2xl group-hover:bg-blue-600/30 transition-all shadow-lg">
-            <Shield className="w-6 h-6" />
+          <div className="w-14 h-14 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center backdrop-blur-2xl group-hover:bg-cyan-500/10 transition-all shadow-lg overflow-hidden p-2">
+            <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
           </div>
           <div className="flex flex-col">
             <span className="text-2xl font-black text-white text-outlined-purple -mb-1" style={{ letterSpacing: '-0.1em' }}>ECIPHERYX<span className="logo-dot">.</span></span>
