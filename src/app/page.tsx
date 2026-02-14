@@ -1,13 +1,40 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import { Shield, Database, Scan, ChevronRight, Activity, Terminal, Lock, Cpu, Globe } from "lucide-react";
 import EcipheryxHero from "@/components/ui/EcipheryxHero";
 import NeuralBackground from "@/components/ui/NeuralBackground";
 
+const VoiceTrigger = () => {
+  useEffect(() => {
+    const speak = () => {
+      const msg = new SpeechSynthesisUtterance("Ecipheryx online and ready");
+      msg.rate = 0.9;
+      msg.pitch = 0.85;
+      window.speechSynthesis.speak(msg);
+    };
+
+    // Try speaking immediately
+    speak();
+
+    // To handle browser autoplay policies, adding a listener for the first interaction
+    const handleFirstInteraction = () => {
+      speak();
+      window.removeEventListener('click', handleFirstInteraction);
+    };
+
+    window.addEventListener('click', handleFirstInteraction);
+    return () => window.removeEventListener('click', handleFirstInteraction);
+  }, []);
+
+  return null;
+};
+
 export default function Home() {
   return (
     <main className="min-h-screen bg-[#050a14] font-sans relative overflow-hidden">
+      <VoiceTrigger />
       <div className="fixed inset-0 pointer-events-none noise-bg z-0" />
       <div className="fixed inset-0 bg-gradient-to-b from-[#0a192f]/50 via-transparent to-[#050a14] z-0" />
 
