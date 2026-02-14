@@ -1,0 +1,43 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  verificationSessions VerificationSession[]
+  tokens        ProofOfLifeToken[]
+}
+
+model VerificationSession {
+  id              String   @id @default(cuid())
+  userId          String
+  challengeType   String   // e.g. "BLINK", "SMILE", "NOD"
+  status          String   @default("PENDING") // PENDING, PASSED, FAILED
+  landmarkLog     Json?    // Array of coordinate deltas
+  confidence      Float?   // Score from Groq or local CV
+  createdAt       DateTime @default(now())
+  user            User     @relation(fields: [userId], references: [id])
+}
+
+model ProofOfLifeToken {
+  id          String   @id @default(cuid())
+  userId      String
+  token       String   @unique @default(uuid())
+  solanaTx    String?  // Solana transaction hash
+  solanaMint  String?  // Solana token address
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id])
+}
