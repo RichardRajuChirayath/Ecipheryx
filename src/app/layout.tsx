@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Ecipheryx | Proof of Life Ritual",
-  description: "Secure digital identity through anti-deepfake liveness verification.",
+  title: "ECIPHERYX | Biometric Audit Platform",
+  description: "High-fidelity biometric integrity and deepfake detection protocol.",
 };
 
 export default function RootLayout({
@@ -25,7 +25,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-zinc-950 text-white`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#050a14] text-white selection:bg-cyan-500/30`}
       >
         {children}
       </body>

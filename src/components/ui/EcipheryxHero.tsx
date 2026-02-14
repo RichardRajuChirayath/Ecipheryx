@@ -1,102 +1,106 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Shield, Fingerprint, Lock, Zap } from "lucide-react";
-import Link from "next/link";
+import { Shield, Fingerprint, Zap, MousePointer2 } from "lucide-react";
 
 export default function EcipheryxHero() {
     const containerVariants = {
         hidden: { opacity: 0 },
         visible: {
             opacity: 1,
-            transition: { staggerChildren: 0.1 },
+            transition: { staggerChildren: 0.1, delayChildren: 0.3 },
         },
     };
 
     const itemVariants = {
         hidden: { y: 20, opacity: 0 },
-        visible: { y: 0, opacity: 1 },
+        visible: {
+            y: 0,
+            opacity: 1,
+            transition: { type: "spring" as const, stiffness: 80, damping: 15 }
+        },
     };
 
-    return (
-        <div className="relative pt-32 pb-20 flex flex-col items-center justify-center overflow-hidden">
-            {/* HUD Decoration */}
-            <div className="absolute top-20 left-10 w-40 h-40 border-l border-t border-white/10 pointer-events-none opacity-20" />
-            <div className="absolute top-20 right-10 w-40 h-40 border-r border-t border-white/10 pointer-events-none opacity-20" />
+    const titleChars = "ECIPHERYX".split("");
 
+    return (
+        <div className="relative pt-48 pb-32 flex flex-col items-center justify-center overflow-hidden min-h-[85vh]">
             <motion.div
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"
-                className="relative z-10 text-center px-4 max-w-6xl w-full"
+                className="relative z-20 text-center px-6 max-w-7xl w-full"
             >
-                <motion.div variants={itemVariants} className="flex flex-col items-center mb-10">
-                    <div className="flex items-center gap-4 mb-4">
-                        <div className="h-px w-12 bg-cyan-500/50" />
-                        <span className="text-[10px] text-cyan-500 font-mono tracking-[0.5em] uppercase">Identity Protocol v4.0</span>
-                        <div className="h-px w-12 bg-cyan-500/50" />
-                    </div>
+                {/* Advanced Status Badge */}
+                <motion.div variants={itemVariants} className="inline-flex items-center gap-3 px-5 py-2 bg-white/5 border border-white/10 rounded-full mb-12 backdrop-blur-3xl shadow-xl">
+                    <div className="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_12px_#00e5ff] animate-pulse" />
+                    <span className="text-[10px] text-zinc-400 font-mono tracking-[0.4em] uppercase font-bold">
+                        SYSTEM_STATUS: SECURED
+                    </span>
+                    <div className="w-px h-3 bg-white/10 mx-2" />
+                    <span className="text-[10px] text-purple-500/80 font-mono uppercase tracking-widest font-black">
+                        PRO_NODE_v4.2
+                    </span>
                 </motion.div>
 
-                <motion.div variants={itemVariants} className="relative inline-block mb-8">
-                    <h1 className="text-7xl md:text-9xl font-black tracking-tighter text-white uppercase italic glitch-cyan leading-none">
-                        ECIPHERYX
-                    </h1>
-                    <div className="absolute -right-12 top-0 text-[10px] font-mono text-zinc-700 vertical-text tracking-widest opacity-50 hidden md:block">
-                        AUTHENTICITY_OR_DEATH
-                    </div>
+                <motion.div variants={itemVariants} className="relative mb-12">
+                    <motion.h1
+                        initial={{ opacity: 0, scale: 0.95, filter: "blur(10px)" }}
+                        animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+                        transition={{
+                            delay: 0.5,
+                            duration: 1.2,
+                            ease: [0.23, 1, 0.32, 1]
+                        }}
+                        className="text-8xl md:text-[13rem] font-black leading-none select-none text-outlined-purple"
+                    >
+                        ECIPHERYX<span className="logo-dot">.</span>
+                    </motion.h1>
+                    <motion.span
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 0.15 }}
+                        className="absolute -top-12 left-1/2 -translate-x-1/2 text-[15rem] font-black text-purple-500 blur-[120px] pointer-events-none"
+                    >
+                        AI
+                    </motion.span>
                 </motion.div>
-
 
                 <motion.p
                     variants={itemVariants}
-                    className="text-lg md:text-xl text-zinc-500 font-medium max-w-2xl mx-auto mb-16 leading-relaxed italic"
+                    className="text-lg md:text-xl text-zinc-500 font-medium max-w-3xl mx-auto mb-20 leading-relaxed tracking-wide"
                 >
-                    Proof of Life in a synthetic world. Verify your digital soul via
-                    <span className="text-white"> Multi-Factor Neural Rituals</span> and secure your high-value assets.
+                    The next-generation <span className="text-white font-black px-2 py-0.5 bg-white/5 rounded border border-white/10">Biometric Verification Layer</span>.
+                    Real-time liveness assessment, deepfake detection, and distributed identity rituals.
                 </motion.p>
 
                 <motion.div
                     variants={itemVariants}
-                    className="grid grid-cols-1 md:grid-cols-3 gap-8 text-left"
+                    className="flex flex-wrap justify-center gap-6"
                 >
-                    <FeatureCard
-                        icon={<Fingerprint className="w-6 h-6 text-cyan-400" />}
-                        title="Biometric Liveness"
-                        description="On-device landmark analysis ensures you are flesh and bone, not a synthetic render."
-                        tag="LEVEL 1"
-                    />
-                    <FeatureCard
-                        icon={<Zap className="w-6 h-6 text-fuchsia-400" />}
-                        title="Neural Forensic"
-                        description="MoE reasoning models hunt for frame-splicing and biometric drift in real-time."
-                        tag="LEVEL 2"
-                    />
-                    <FeatureCard
-                        icon={<Shield className="w-6 h-6 text-emerald-400" />}
-                        title="Proof of Soul"
-                        description="Mint a temporary cryptographic key to access guarded digital asset protocols."
-                        tag="LEVEL 3"
-                    />
+                    <div className="px-8 py-3 rounded-2xl bg-white/5 border border-white/10 flex items-center gap-4 group hover:border-cyan-500/30 transition-all cursor-default text-zinc-400 hover:text-cyan-400">
+                        <Fingerprint className="w-5 h-5" />
+                        <span className="text-[11px] font-bold uppercase tracking-widest">Biometric Integrity</span>
+                    </div>
+                    <div className="px-8 py-3 rounded-2xl bg-white/5 border border-white/10 flex items-center gap-4 group hover:border-purple-500/30 transition-all cursor-default text-zinc-400 hover:text-purple-400">
+                        <Zap className="w-5 h-5" />
+                        <span className="text-[11px] font-bold uppercase tracking-widest">Neural Analysis</span>
+                    </div>
+                    <div className="px-8 py-3 rounded-2xl bg-white/5 border border-white/10 flex items-center gap-4 group hover:border-emerald-500/30 transition-all cursor-default text-zinc-400 hover:text-emerald-400">
+                        <Shield className="w-5 h-5" />
+                        <span className="text-[11px] font-bold uppercase tracking-widest">On-Chain Proof</span>
+                    </div>
+                </motion.div>
+
+                <motion.div variants={itemVariants} className="mt-32 flex flex-col items-center gap-4 opacity-20 group cursor-pointer hover:opacity-100 transition-all">
+                    <p className="text-[10px] font-mono tracking-[0.8em] uppercase text-zinc-500 font-bold">Initiate Protocol</p>
+                    <motion.div
+                        animate={{ y: [0, 8, 0] }}
+                        transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+                    >
+                        <MousePointer2 className="w-4 h-4 text-zinc-400" />
+                    </motion.div>
                 </motion.div>
             </motion.div>
-        </div >
-    );
-}
-
-function FeatureCard({ icon, title, description, tag }: { icon: any; title: string; description: string; tag: string }) {
-    return (
-        <div className="p-8 glass-card border border-white/5 hover:border-cyan-500/30 transition-all duration-500 group relative hud-corner hud-corner-tl hud-corner-br">
-            <div className="absolute top-4 right-6 text-[8px] font-mono text-zinc-700 tracking-widest group-hover:text-cyan-500/50 transition-colors uppercase">
-                {tag}
-            </div>
-            <div className="mb-6 p-3 bg-white/[0.03] rounded-2xl w-fit group-hover:scale-110 transition-transform duration-500 border border-white/5">
-                {icon}
-            </div>
-            <h3 className="text-xl font-black text-white mb-3 group-hover:text-cyan-400 transition-colors italic uppercase tracking-tight">{title}</h3>
-            <p className="text-sm text-zinc-500 leading-relaxed font-medium italic group-hover:text-zinc-400 transition-colors">
-                {description}
-            </p>
         </div>
     );
 }
