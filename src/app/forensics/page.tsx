@@ -102,16 +102,14 @@ export default function DeepfakeForensics() {
                 const frameBase64 = await extractVideoFrame(file);
                 await performAudit(frameBase64, "image/jpeg");
             } else if (mode === "AUDIO") {
-                // Send audio metadata as text for analysis (vision model can't process audio)
+                // Send audio metadata directly as text (vision model can't process audio)
                 const audioMeta = JSON.stringify({
                     fileName: file.name,
                     fileSize: `${(file.size / 1024 / 1024).toFixed(2)} MB`,
                     fileType: file.type,
                     lastModified: new Date(file.lastModified).toISOString(),
                 });
-                // Encode metadata as base64 for the server action
-                const metaBase64 = btoa(audioMeta);
-                await performAudit(metaBase64, "text/plain");
+                await performAudit(audioMeta, "text/plain");
             } else {
                 // IMAGE mode — optimize and send
                 const reader = new FileReader();

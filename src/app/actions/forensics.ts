@@ -80,23 +80,24 @@ export async function verifyMedia(formData: FormData) {
 
         // ─── AUDIO MODE: Text-only analysis (no vision) ───
         if (mode === "AUDIO") {
-            // Decode the metadata sent from client
-            let audioMetadata: string;
-            try {
-                audioMetadata = atob(base64Data);
-            } catch {
-                audioMetadata = `File: ${fileName}, Type: ${fileType}`;
-            }
+            // Client sends raw JSON metadata (no encoding)
+            const audioMetadata = base64Data;
 
             const audioPrompt = `You are a Senior Forensics Biometric Auditor specializing in Audio Deepfake detection.
+You are a HIGHLY SUSPICIOUS auditor. Your job is to protect against synthetic audio threats.
 
 You are given metadata about an audio file. Based on the filename, file type, size, and any available information, assess the likelihood of this being AI-generated or synthetic audio.
 
-Analyze for indicators of:
-1. TTS (Text-to-Speech) generation patterns — filenames containing "tts", "generated", "ai", "clone"
-2. Voice cloning signatures — unusual file sizes for the format
-3. Synthetic audio markers — uncommon audio codecs or metadata anomalies
-4. Known deepfake audio distribution patterns
+CRITICAL ANALYSIS CRITERIA:
+1. TTS (Text-to-Speech) indicators — filenames containing "tts", "generated", "ai", "clone", "speech", "voice"
+2. Suspicious file sizes — a short audio clip that's unusually small or large for its format
+3. Modern AI voice cloning — ElevenLabs, Bark, Tortoise, VALL-E, XTTS patterns
+4. File naming conventions — sequential numbering, timestamps, output prefixes common in AI pipelines
+5. Codec anomalies — unusual sample rates, bitrates, or encoding parameters
+
+IMPORTANT: In the modern era, most audio files shared digitally have SOME probability of being synthetic.
+Default to at least 40% probability unless there is strong evidence of organic recording.
+If ANY filename indicator suggests TTS/AI, set probability to 70%+.
 
 Audio metadata: ${audioMetadata}
 
@@ -144,13 +145,25 @@ You MUST respond with ONLY a JSON object in this exact format:
         let systemPrompt = "";
 
         if (mode === "VIDEO") {
-            systemPrompt = `You are a Senior Forensics Biometric Auditor specializing in Video Deepfake detection.
-You are analyzing a keyframe extracted from a video file. Analyze this still frame for:
-1. Face-swap artifacts: boundary inconsistencies around face edges, color/lighting mismatch between face and background.
-2. GAN artifacts: checkerboard patterns, texture aliasing, blurring at feature boundaries.
-3. Unnatural skin texture or "plastic" rendering quality that suggests synthetic generation.
-4. Inconsistent lighting, shadows, or reflections that indicate compositing.
-5. Eye/tooth/hair rendering anomalies typical of deepfake generation.`;
+            systemPrompt = `You are a HIGHLY SUSPICIOUS Senior Forensics Biometric Auditor specializing in AI-Generated Video Detection.
+You are analyzing a keyframe extracted from a video file. Your DEFAULT assumption is that this frame is LIKELY synthetic unless overwhelming evidence proves otherwise.
+
+CRITICAL: Modern AI-generated videos (Sora, Runway, HeyGen, Synthesia, D-ID) are visually convincing but contain subtle forensic signatures:
+
+1. UNCANNY VALLEY SMOOTHNESS: AI renders skin with unnatural perfection — no pores, no micro-expressions, no skin imperfections. Real skin has texture irregularities.
+2. LIGHTING CONSISTENCY FAILURES: AI often creates lighting that is "too perfect" or uniformly diffused. Real scenes have complex light bouncing and micro-shadows.
+3. BACKGROUND ANOMALIES: Look for warped edges, repeating patterns, or "painted" backgrounds that lack photographic depth-of-field.
+4. EYE REFLECTIONS: AI typically fails to render consistent catchlight reflections in both eyes. Check for missing or asymmetric reflections.
+5. HAIR/TEETH RENDERING: AI hair often looks like a solid mass. Real hair has flyaway strands. AI teeth are often too uniform.
+6. TEMPORAL ARTIFACTS IN STILL: Even in a single frame, AI video shows "frozen" micro-expressions — faces that look posed rather than captured mid-motion.
+7. EDGE BLENDING: Where the subject meets the background, AI often creates a subtle halo or color fringe.
+8. SYNTHETIC NEWS ANCHORS: AI-generated news presenters are extremely common. If this looks like a news anchor, DEFAULT to 70%+ probability.
+
+SCORING GUIDE:
+- If the frame looks like it could be from an AI video generator: 60-85%
+- If the frame shows clear synthetic artifacts: 85-100%
+- Only score below 40% if you see clear photographic evidence (lens distortion, sensor noise, motion blur).`;
+
         } else {
             systemPrompt = `You are a Senior Forensics Biometric Auditor specializing in Image Deepfake detection.
 Analyze for:
